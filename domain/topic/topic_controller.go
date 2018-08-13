@@ -57,6 +57,7 @@ func (ctrl *TopicController) Index(w http.ResponseWriter, r *http.Request) {
 		} else {
 			data, _ = json.Marshal(topics)
 		}
+
 		_ = json.Unmarshal(data, &res)
 
 		ctrl.SendJSON(w, &res, http.StatusOK)
