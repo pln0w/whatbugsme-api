@@ -55,7 +55,7 @@ func (ctrl *UserController) SignUp(w http.ResponseWriter, r *http.Request) {
 			map[string]bson.ObjectId{"organisation": oID},
 		)
 		if user != nil {
-			ctrl.HandleError(errors.New("User already found"), w, http.StatusConflict)
+			ctrl.HandleError(errors.New("User exists"), w, http.StatusConflict)
 			return
 		}
 

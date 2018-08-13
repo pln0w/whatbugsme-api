@@ -126,7 +126,8 @@ func (ctrl *VoteController) Create(w http.ResponseWriter, r *http.Request) {
 		Topic:    topic.ID,
 	})
 
-	existingVote, _ := db.FindOneBy(C_VOTE, map[string]string{"token": hashToken}, nil)
+	existingVote, _ := db.FindOneBy(C_VOTE, map[string]string{"user_token": hashToken}, nil)
+
 	if existingVote != nil {
 		ctrl.HandleError(errors.New("User already voted"), w, http.StatusConflict)
 		return
