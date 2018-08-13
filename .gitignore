@@ -1,0 +1,8 @@
+.idea
+.env
+tmp
+main
+.vscode
+debug
+vendor
+server.log
