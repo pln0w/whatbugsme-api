@@ -48,19 +48,15 @@ func (ctrl *TopicController) Index(w http.ResponseWriter, r *http.Request) {
 	if organisation != nil {
 
 		topics, tErr := db.FindAllBy(C_TOPIC, nil, map[string]bson.ObjectId{"organisation": oID}, "-created_at")
-		if tErr != nil {
-			_, fn, line, _ := runtime.Caller(1)
-			log.Printf("[error] %s:%d %v", fn, line, tErr)
-			ctrl.HandleError(tErr, w, http.StatusInternalServerError)
-			return
-		}
-		if topics == nil {
-			ctrl.SendJSON(w, &[]Topic{}, http.StatusOK)
-		}
 
+		var data []byte
 		var res Topics
 
-		data, _ := json.Marshal(topics)
+		if topics == nil || tErr != nil {
+			data, _ = json.Marshal(make([]Topic, 0))
+		} else {
+			data, _ = json.Marshal(topics)
+		}
 		_ = json.Unmarshal(data, &res)
 
 		ctrl.SendJSON(w, &res, http.StatusOK)
