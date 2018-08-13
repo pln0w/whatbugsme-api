@@ -104,7 +104,7 @@ func FindOneBy(collection string, params map[string]string, ids map[string]bson.
 }
 
 // FindAllBy executes query looking for multiple record in collection
-func FindAllBy(collection string, params map[string]string, ids map[string]bson.ObjectId) ([]interface{}, error) {
+func FindAllBy(collection string, params map[string]string, ids map[string]bson.ObjectId, s string) ([]interface{}, error) {
 
 	var results []interface{}
 
@@ -117,7 +117,11 @@ func FindAllBy(collection string, params map[string]string, ids map[string]bson.
 		fields[k] = v
 	}
 
-	err := dbC.GetCollection(collection).Find(fields).All(&results)
+	sort := "$natural"
+	if s != "" {
+		sort = s
+	}
+	err := dbC.GetCollection(collection).Find(fields).Sort(sort).All(&results)
 	if err != nil {
 		return nil, err
 	}

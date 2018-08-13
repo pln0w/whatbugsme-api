@@ -7,7 +7,7 @@ import (
 )
 
 type Vote struct {
-	ID        bson.ObjectId `json:"id" bson:"_id"`
+	ID        bson.ObjectId `json:"id" bson:"id"`
 	User      string        `json:"user_token" bson:"user_token"`
 	Topic     bson.ObjectId `json:"topic" bson:"topic"`
 	VoteType  VoteType      `json:"vote_type" bson:"vote_type"`

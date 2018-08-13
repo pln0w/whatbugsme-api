@@ -7,7 +7,7 @@ import (
 )
 
 type Organisation struct {
-	ID        bson.ObjectId `json:"id" bson:"_id"`
+	ID        bson.ObjectId `json:"id" bson:"id"`
 	Name      string        `json:"name" bson:"name"`
 	CreatedAt time.Time     `json:"created_at" bson:"created_at"`
 }

@@ -45,7 +45,7 @@ func (ctrl *UserController) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	oID := bson.ObjectIdHex(params["organisation"])
 
-	organisation, _ := db.FindOneBy(o.C_ORGANISATION, nil, map[string]bson.ObjectId{"_id": oID})
+	organisation, _ := db.FindOneBy(o.C_ORGANISATION, nil, map[string]bson.ObjectId{"id": oID})
 	if organisation != nil {
 
 		pass := GetPasswordHash(params["email"], params["password"])
@@ -97,7 +97,7 @@ func (ctrl *UserController) Login(w http.ResponseWriter, r *http.Request) {
 
 	oID := bson.ObjectIdHex(params["organisation"])
 
-	organisation, _ := db.FindOneBy(o.C_ORGANISATION, nil, map[string]bson.ObjectId{"_id": oID})
+	organisation, _ := db.FindOneBy(o.C_ORGANISATION, nil, map[string]bson.ObjectId{"id": oID})
 	if organisation != nil {
 
 		pass := GetPasswordHash(params["email"], params["password"])

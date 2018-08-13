@@ -7,7 +7,7 @@ import (
 )
 
 type Topic struct {
-	ID           bson.ObjectId `json:"id" bson:"_id"`
+	ID           bson.ObjectId `json:"id" bson:"id"`
 	Content      string        `json:"content" bson:"content"`
 	VotesUp      int           `json:"votes_up" bson:"votes_up"`
 	VotesDown    int           `json:"votes_down" bson:"votes_down"`

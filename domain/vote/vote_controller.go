@@ -1,6 +1,7 @@
 package vote
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -44,13 +45,13 @@ func (ctrl *VoteController) GetTopicVotes(w http.ResponseWriter, r *http.Request
 
 	tID, oID := bson.ObjectIdHex(params["topic"]), bson.ObjectIdHex(params["organisation"])
 
-	topic, _ := db.FindOneBy(t.C_TOPIC, nil, map[string]bson.ObjectId{"_id": tID, "organisation": oID})
+	topic, _ := db.FindOneBy(t.C_TOPIC, nil, map[string]bson.ObjectId{"id": tID, "organisation": oID})
 	if topic == nil {
 		ctrl.HandleError(errors.New("Topic not found"), w, http.StatusNotFound)
 		return
 	}
 
-	votes, faErr := db.FindAllBy(C_VOTE, nil, map[string]bson.ObjectId{"topic": tID})
+	votes, faErr := db.FindAllBy(C_VOTE, nil, map[string]bson.ObjectId{"topic": tID}, "")
 	if faErr != nil {
 		_, fn, line, _ := runtime.Caller(1)
 		log.Printf("[error] %s:%d %v", fn, line, faErr)
@@ -58,7 +59,12 @@ func (ctrl *VoteController) GetTopicVotes(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	ctrl.SendJSON(w, &votes, http.StatusOK)
+	var res Votes
+
+	data, _ := json.Marshal(votes)
+	_ = json.Unmarshal(data, &res)
+
+	ctrl.SendJSON(w, &res, http.StatusOK)
 }
 
 // Create is a controller action,
@@ -88,7 +94,7 @@ func (ctrl *VoteController) Create(w http.ResponseWriter, r *http.Request) {
 
 	tID, oID := bson.ObjectIdHex(params["topic"]), bson.ObjectIdHex(params["organisation"])
 
-	fTopic, _ := db.FindOneBy(t.C_TOPIC, nil, map[string]bson.ObjectId{"_id": tID, "organisation": oID})
+	fTopic, _ := db.FindOneBy(t.C_TOPIC, nil, map[string]bson.ObjectId{"id": tID, "organisation": oID})
 	if fTopic == nil {
 		ctrl.HandleError(errors.New("Topic not found"), w, http.StatusNotFound)
 		return
@@ -139,7 +145,7 @@ func (ctrl *VoteController) Create(w http.ResponseWriter, r *http.Request) {
 		field = "votes_down"
 	}
 
-	incErr := db.IncrementFieldWhere(t.C_TOPIC, field, 1, nil, map[string]bson.ObjectId{"_id": tID})
+	incErr := db.IncrementFieldWhere(t.C_TOPIC, field, 1, nil, map[string]bson.ObjectId{"id": tID})
 	if incErr != nil {
 		_, fn, line, _ := runtime.Caller(1)
 		log.Printf("[error] %s:%d %v", fn, line, incErr)
@@ -147,11 +153,16 @@ func (ctrl *VoteController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedTopic, _ := db.FindOneBy(t.C_TOPIC, nil, map[string]bson.ObjectId{"_id": topic.ID})
+	updatedTopic, _ := db.FindOneBy(t.C_TOPIC, nil, map[string]bson.ObjectId{"id": topic.ID})
 	if updatedTopic == nil {
 		ctrl.HandleError(errors.New("Topic not found"), w, http.StatusNotFound)
 		return
 	}
 
-	ctrl.SendJSON(w, &updatedTopic, http.StatusOK)
+	var res t.Topic
+
+	data, _ := json.Marshal(updatedTopic)
+	_ = json.Unmarshal(data, &res)
+
+	ctrl.SendJSON(w, &res, http.StatusOK)
 }

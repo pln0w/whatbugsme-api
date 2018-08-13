@@ -1,6 +1,7 @@
 package topic
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -43,10 +44,10 @@ func (ctrl *TopicController) Index(w http.ResponseWriter, r *http.Request) {
 
 	oID := bson.ObjectIdHex(params["organisation"])
 
-	organisation, _ := db.FindOneBy(o.C_ORGANISATION, nil, map[string]bson.ObjectId{"_id": oID})
+	organisation, _ := db.FindOneBy(o.C_ORGANISATION, nil, map[string]bson.ObjectId{"id": oID})
 	if organisation != nil {
 
-		topics, tErr := db.FindAllBy(C_TOPIC, nil, map[string]bson.ObjectId{"organisation": oID})
+		topics, tErr := db.FindAllBy(C_TOPIC, nil, map[string]bson.ObjectId{"organisation": oID}, "-created_at")
 		if tErr != nil {
 			_, fn, line, _ := runtime.Caller(1)
 			log.Printf("[error] %s:%d %v", fn, line, tErr)
@@ -57,7 +58,12 @@ func (ctrl *TopicController) Index(w http.ResponseWriter, r *http.Request) {
 			ctrl.SendJSON(w, &[]Topic{}, http.StatusOK)
 		}
 
-		ctrl.SendJSON(w, &topics, http.StatusOK)
+		var res Topics
+
+		data, _ := json.Marshal(topics)
+		_ = json.Unmarshal(data, &res)
+
+		ctrl.SendJSON(w, &res, http.StatusOK)
 
 	} else {
 		ctrl.HandleError(errors.New("Organisation not found"), w, http.StatusNotFound)
@@ -84,7 +90,7 @@ func (ctrl *TopicController) Create(w http.ResponseWriter, r *http.Request) {
 
 	oID := bson.ObjectIdHex(params["organisation"])
 
-	organisation, _ := db.FindOneBy(o.C_ORGANISATION, nil, map[string]bson.ObjectId{"_id": oID})
+	organisation, _ := db.FindOneBy(o.C_ORGANISATION, nil, map[string]bson.ObjectId{"id": oID})
 	if organisation != nil {
 
 		topic := CreateNewTopic(params["content"], oID)
