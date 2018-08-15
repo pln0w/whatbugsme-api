@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"whatbugsme/application/core"
 	"whatbugsme/infrastructure/db"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 type OrganisationController struct {
@@ -50,6 +52,33 @@ func (ctrl *OrganisationController) RegisterOrganisation(w http.ResponseWriter, 
 		ctrl.HandleError(iErr, w, http.StatusInternalServerError)
 		return
 	}
+
+	ctrl.SendJSON(w, &organisation, http.StatusOK)
+}
+
+// SearchOrganisation is a controller action,
+// returns JSON with found organisation
+func (ctrl *OrganisationController) SearchOrganisation(w http.ResponseWriter, r *http.Request) {
+
+	params := map[string]string{
+		"name": r.FormValue("name"),
+	}
+
+	vErr := ctrl.ValidEmptyParams(params, w)
+	if vErr != nil {
+		ctrl.HandleError(vErr, w, http.StatusUnprocessableEntity)
+		return
+	}
+
+	fOrg, _ := db.FindOneBy(C_ORGANISATION, map[string]string{"name": params["name"]}, nil)
+	if fOrg == nil {
+		ctrl.HandleError(errors.New("Organisation not found"), w, http.StatusNotFound)
+		return
+	}
+	// Proper casting bsons to structs
+	var organisation Organisation
+	bsonBytes, _ := bson.Marshal(fOrg)
+	bson.Unmarshal(bsonBytes, &organisation)
 
 	ctrl.SendJSON(w, &organisation, http.StatusOK)
 }

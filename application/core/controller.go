@@ -62,13 +62,15 @@ func (ctrl *Controller) ValidEmptyParams(params map[string]string, w http.Respon
 
 // IsParamCorrectHex is a controller function,
 // checks for proper hex format
-func (ctrl *Controller) IsParamCorrectHex(key string, param string, w http.ResponseWriter) {
+func (ctrl *Controller) IsParamCorrectHex(key string, param string) error {
 
-	if param != "" {
-		if false == bson.IsObjectIdHex(param) {
-			ctrl.HandleError(errors.New("Invalid "+key+" ID"), w, http.StatusUnprocessableEntity)
-		}
-	} else {
-		ctrl.HandleError(errors.New("Parameter "+key+" canno be empty"), w, http.StatusUnprocessableEntity)
+	if param == "" {
+		return errors.New("Parameter " + key + " canno be empty")
 	}
+
+	if false == bson.IsObjectIdHex(param) {
+		return errors.New("Invalid " + key + " ID")
+	}
+
+	return nil
 }

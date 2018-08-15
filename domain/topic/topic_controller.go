@@ -40,7 +40,11 @@ func (ctrl *TopicController) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctrl.IsParamCorrectHex("organisation", params["organisation"], w)
+	oE := ctrl.IsParamCorrectHex("organisation", params["organisation"])
+	if oE != nil {
+		ctrl.HandleError(oE, w, http.StatusUnprocessableEntity)
+		return
+	}
 
 	oID := bson.ObjectIdHex(params["organisation"])
 
@@ -83,7 +87,11 @@ func (ctrl *TopicController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctrl.IsParamCorrectHex("organisation", params["organisation"], w)
+	oE := ctrl.IsParamCorrectHex("organisation", params["organisation"])
+	if oE != nil {
+		ctrl.HandleError(oE, w, http.StatusUnprocessableEntity)
+		return
+	}
 
 	oID := bson.ObjectIdHex(params["organisation"])
 

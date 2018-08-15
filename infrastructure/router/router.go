@@ -1,6 +1,8 @@
 package router
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
 	"whatbugsme/domain/organisation"
 	"whatbugsme/domain/topic"
@@ -33,6 +35,10 @@ var (
 		Route{
 			"RegisterOrganisation", "POST",
 			"/organisation", orgCtrl.RegisterOrganisation, false,
+		},
+		Route{
+			"SearchOrganisation", "GET",
+			"/organisation", orgCtrl.SearchOrganisation, false,
 		},
 		Route{
 			"SignUp", "POST",
@@ -96,11 +102,26 @@ func AuthMiddleware(h http.Handler) http.Handler {
 			// Find user by this token
 			user, _ := db.FindOneBy(user.C_USER, map[string]string{"token": at}, nil)
 			if user == nil {
-				w.WriteHeader(http.StatusUnauthorized)
-			}
 
-			// Next
-			h.ServeHTTP(w, r)
+				res := struct {
+					Status  int    `json:"status"`
+					Message string `json:"message"`
+				}{
+					Status:  int(http.StatusUnauthorized),
+					Message: "Not authorized",
+				}
+				b, _ := json.Marshal(&res)
+
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusUnauthorized)
+
+				io.WriteString(w, string(b))
+
+			} else {
+
+				// Next
+				h.ServeHTTP(w, r)
+			}
 		}
 	})
 }

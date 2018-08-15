@@ -3,6 +3,7 @@ package vote
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"runtime"
@@ -38,10 +39,23 @@ func (ctrl *VoteController) GetTopicVotes(w http.ResponseWriter, r *http.Request
 		"organisation": mux.Vars(r)["organisation"],
 	}
 
-	ctrl.ValidEmptyParams(params, w)
+	vErr := ctrl.ValidEmptyParams(params, w)
+	if vErr != nil {
+		ctrl.HandleError(vErr, w, http.StatusUnprocessableEntity)
+		return
+	}
 
-	ctrl.IsParamCorrectHex("topic", params["topic"], w)
-	ctrl.IsParamCorrectHex("organisation", params["organisation"], w)
+	oE := ctrl.IsParamCorrectHex("organisation", params["organisation"])
+	if oE != nil {
+		ctrl.HandleError(oE, w, http.StatusUnprocessableEntity)
+		return
+	}
+
+	tE := ctrl.IsParamCorrectHex("topic", params["topic"])
+	if tE != nil {
+		ctrl.HandleError(tE, w, http.StatusUnprocessableEntity)
+		return
+	}
 
 	tID, oID := bson.ObjectIdHex(params["topic"]), bson.ObjectIdHex(params["organisation"])
 
@@ -83,8 +97,17 @@ func (ctrl *VoteController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctrl.IsParamCorrectHex("organisation", params["organisation"], w)
-	ctrl.IsParamCorrectHex("topic", params["topic"], w)
+	oE := ctrl.IsParamCorrectHex("organisation", params["organisation"])
+	if oE != nil {
+		ctrl.HandleError(oE, w, http.StatusUnprocessableEntity)
+		return
+	}
+
+	tE := ctrl.IsParamCorrectHex("topic", params["topic"])
+	if tE != nil {
+		ctrl.HandleError(tE, w, http.StatusUnprocessableEntity)
+		return
+	}
 
 	voteType, castErr := strconv.Atoi(params["voteType"])
 	if castErr != nil {
@@ -92,6 +115,7 @@ func (ctrl *VoteController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(params)
 	tID, oID := bson.ObjectIdHex(params["topic"]), bson.ObjectIdHex(params["organisation"])
 
 	fTopic, _ := db.FindOneBy(t.C_TOPIC, nil, map[string]bson.ObjectId{"id": tID, "organisation": oID})

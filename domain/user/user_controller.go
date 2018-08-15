@@ -41,7 +41,11 @@ func (ctrl *UserController) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctrl.IsParamCorrectHex("organisation", params["organisation"], w)
+	oE := ctrl.IsParamCorrectHex("organisation", params["organisation"])
+	if oE != nil {
+		ctrl.HandleError(oE, w, http.StatusUnprocessableEntity)
+		return
+	}
 
 	oID := bson.ObjectIdHex(params["organisation"])
 
@@ -93,7 +97,11 @@ func (ctrl *UserController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctrl.IsParamCorrectHex("organisation", params["organisation"], w)
+	oE := ctrl.IsParamCorrectHex("organisation", params["organisation"])
+	if oE != nil {
+		ctrl.HandleError(oE, w, http.StatusUnprocessableEntity)
+		return
+	}
 
 	oID := bson.ObjectIdHex(params["organisation"])
 
@@ -107,7 +115,7 @@ func (ctrl *UserController) Login(w http.ResponseWriter, r *http.Request) {
 			map[string]bson.ObjectId{"organisation": oID},
 		)
 		if fUser == nil {
-			ctrl.HandleError(errors.New("Login failed"), w, http.StatusUnauthorized)
+			ctrl.HandleError(errors.New("Login failed"), w, http.StatusUnprocessableEntity)
 			return
 		}
 
