@@ -1,0 +1,26 @@
+FROM golang:latest as builder
+
+COPY . /go/src/whatbugsme
+WORKDIR /go/src/whatbugsme
+
+RUN touch server.log
+
+RUN go get ./...
+RUN go install ./...
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o whatbugsme .
+
+
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /app/
+
+COPY --from=builder /go/src/whatbugsme/whatbugsme .
+COPY --from=builder /go/src/whatbugsme/.env .
+
+CMD ["./whatbugsme"]
+
+LABEL Name=whatbugsme-api Version=0.0.1
+
+EXPOSE 8888

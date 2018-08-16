@@ -10,11 +10,11 @@ services:
   app:
     container_name: app
     build:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
       context: .
     volumes:
       - ./:/go/src/whatbugsme
     ports:
-      - '8080:8080'
+      - '8888:8888'
     environment:
       - SERVER=mongo
