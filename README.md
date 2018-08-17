@@ -3,24 +3,25 @@ WhatBugsMe is an open source project to create issue boards within your organisa
 
 ## Getting started
 
-### Basic Installation
+### How to run (Docker)
 
-#### Using Docker environment
-1. Run  
+* Run  
 `docker-compose up --build -d`
 
-2. Server has live-reload mode
-`docker logs app -f`  
-and expect "_Server start listening on port 8080_" message 
+### How to run (native Go environment)
+
+* Run  
+`go run main.go`
+
+
+### DEVELOPMENT MODE
+Server has live-reload mode enabled. Use Dockerfile.dev in your _docker-compose.yml_ file or Dockerfile.prod if you only want to build and use API server.
+
+Run `docker logs app -f` to see container logs, expect "_Server start listening on port 8888_" message. You may also `tail -f server.log`  
 
 To force rebuild container, run  
-`docker-compose up -d --force-recreate`
-
-
-#### Native Go environment
-1. Install Docker locally  
-2. `go run main.go`
-
+`docker-compose up -d --force-recreate`  
+This will destroy MongoDB container  data. Change volumes settings in _docker-compose.yml_ file, if you want to prevent it.
 
 ## API docs
 
