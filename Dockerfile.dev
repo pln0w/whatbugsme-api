@@ -1,4 +1,4 @@
-FROM golang:latest as builder
+FROM golang:latest
 
 COPY . /go/src/whatbugsme
 WORKDIR /go/src/whatbugsme

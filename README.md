@@ -22,6 +22,10 @@ To force rebuild container, run
 2. `go run main.go`
 
 
+## API docs
+
+[See documentation](API.md)
+
 ## Contributors
 Frontend: **Szymon Półtorak**  
 Backend: **Wojciech Pawlinów**

@@ -10,7 +10,7 @@ services:
   app:
     container_name: app
     build:
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
       context: .
     volumes:
       - ./:/go/src/whatbugsme

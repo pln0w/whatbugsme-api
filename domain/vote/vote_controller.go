@@ -3,7 +3,6 @@ package vote
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"runtime"
@@ -115,7 +114,6 @@ func (ctrl *VoteController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(params)
 	tID, oID := bson.ObjectIdHex(params["topic"]), bson.ObjectIdHex(params["organisation"])
 
 	fTopic, _ := db.FindOneBy(t.C_TOPIC, nil, map[string]bson.ObjectId{"id": tID, "organisation": oID})
