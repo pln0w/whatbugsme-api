@@ -4,6 +4,7 @@ services:
   mongo:
     image: 'bitnami/mongodb:latest'
     container_name: mongo
+    user: ${USER}
     ports:
       - '27017:27017'
     volumes:
