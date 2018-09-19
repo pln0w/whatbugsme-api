@@ -11,6 +11,7 @@ type Topic struct {
 	Content      string        `json:"content" bson:"content"`
 	VotesUp      int           `json:"votes_up" bson:"votes_up"`
 	VotesDown    int           `json:"votes_down" bson:"votes_down"`
+	GUID         string        `json:"guid" bson:"guid"`
 	Organisation bson.ObjectId `json:"organisation" bson:"organisation"`
 	CreatedAt    time.Time     `json:"created_at" bson:"created_at"`
 }
@@ -21,12 +22,13 @@ const (
 
 type Topics []Topic
 
-func CreateNewTopic(content string, organisation bson.ObjectId) Topic {
+func CreateNewTopic(content string, organisation bson.ObjectId, guid string) Topic {
 	return Topic{
 		ID:           bson.NewObjectId(),
 		Content:      content,
 		VotesDown:    0,
 		VotesUp:      0,
+		GUID:         guid,
 		Organisation: organisation,
 		CreatedAt:    time.Now(),
 	}

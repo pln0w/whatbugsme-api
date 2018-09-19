@@ -4,7 +4,7 @@ services:
   mongo:
     image: 'bitnami/mongodb:latest'
     container_name: mongo
-    user: ${USER}
+    user: ${USER} # production line - avoid locally
     ports:
       - '27017:27017'
     volumes:
@@ -13,7 +13,7 @@ services:
   app:
     container_name: app
     build:
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.prod # locally use .dev
       context: .
     volumes:
       - ./:/go/src/whatbugsme

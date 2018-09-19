@@ -1,5 +1,5 @@
 # WhatBugsMe
-WhatBugsMe is an open source project to create issue boards within your organisation. The main focuse of this project is to stay anonymous, for those, who want to report a case.
+WhatBugsMe is an open source project to create issue boards within your organisation. The main focus of this project is to stay anonymous, for those, who want to report a case.
 
 ## Getting started
 

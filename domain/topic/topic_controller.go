@@ -78,6 +78,7 @@ func (ctrl *TopicController) Create(w http.ResponseWriter, r *http.Request) {
 
 	params := map[string]string{
 		"content":      r.FormValue("content"),
+		"guid":         r.FormValue("guid"),
 		"organisation": mux.Vars(r)["organisation"],
 	}
 
@@ -98,7 +99,13 @@ func (ctrl *TopicController) Create(w http.ResponseWriter, r *http.Request) {
 	organisation, _ := db.FindOneBy(o.C_ORGANISATION, nil, map[string]bson.ObjectId{"id": oID})
 	if organisation != nil {
 
-		topic := CreateNewTopic(params["content"], oID)
+		tGuidExst, _ := db.FindOneBy(C_TOPIC, map[string]string{"guid": params["guid"]}, nil)
+		if tGuidExst != nil {
+			ctrl.HandleError(errors.New("Topic with given GUID already exists"), w, http.StatusConflict)
+			return
+		}
+
+		topic := CreateNewTopic(params["content"], oID, params["guid"])
 
 		iErr := db.Insert(C_TOPIC, topic)
 		if iErr != nil {
